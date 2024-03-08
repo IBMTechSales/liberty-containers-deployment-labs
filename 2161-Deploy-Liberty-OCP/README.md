@@ -1,4 +1,4 @@
-# Lab 2161: Rapidly deploy and configure your Java applications with WebSphere Liberty and OpenShift Container Platform
+# Rapidly deploy and configure your Java applications with WebSphere Liberty and OpenShift Container Platform
 
 ![banner](./images/media/image1.jpeg) 
 
