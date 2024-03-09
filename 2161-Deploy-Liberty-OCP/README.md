@@ -740,7 +740,7 @@ You will **run the script**, which will prompt you to press “**Enter**” key 
 
 1. Run the following command to setup, ,build, and run the PlantsByWebSphere application in a local container.
 
-        cd /home/techzone/appmod-pot-labfiles/labs/RuntimeModernization/scipts
+        cd /home/techzone/appmod-pot-labfiles/labs/RuntimeModernization/scripts
  
         ./build-container -i
 
