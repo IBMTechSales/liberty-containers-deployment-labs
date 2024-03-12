@@ -746,8 +746,33 @@ ___
 
 You have now created a a container image without any application specific configuration. In this section, we will **push** that image to an image repository and then **deploy** it into OpenShift, along with its configuration, with a single command.
 
+### 4.1 Update the Kustomize structure to move the configmap configuration to the overlays folder
 
-### 4.1 Update the YAML files to add the application configuraton for deployment
+It is common to have different application configuration between deployments such as `dev` and `staging`. In this lab, we use different DB2 application databases between the two configurations. For this reason , we want the configMap to be located in the Kustomize `overlays` folder, rather than the `base` where it is placed, by default, in the Transformation Advisor migration bundle. 
+
+For the lab, we have provided the updated file structure for you. You just need to run the commands below to update the migration bundle. 
+
+1. Run the following commands to update the Kustomize structure as stated above. 
+
+        rm -rf /home/techzone/Student/labs/appmod/migration-bundle/deploy/kustomize
+
+        cp -r /home/techzone/appmod-pot-labfiles/labs/RuntimeModernization/lab_2161-1/kustomize /home/techzone/Student/labs/appmod/migration-bundle/deploy/
+
+   
+    a. List the updated directory structure   
+
+        ls -Rl  /home/techzone/Student/labs/appmod/migration-bundle/deploy/kustomize
+    
+
+    Notice the `plantsbywebspheree6-configmap.yaml` file is now in the `overlays/dev` folder. 
+    
+    The `kustomize.yaml` files in the **base** and **overlays/dev** folder have been updated to reflect the new location of the **configmap yaml** file. 
+
+    ![](./images/media/updated-kustomize-structure.png)
+
+
+
+### 4.2 Update the YAML files to add the application configuraton for deployment
 
 Recall, the container image does not have the application configuration baked in. 
 
@@ -756,15 +781,14 @@ You will make the following updates to the configuration YAML files in the migra
   -  Update the `overays/dev/plantsbywebsphereee6-secret.yaml` file
      -  Add the sensitive-data to the **secret** YAML file
   
+ - Update the `overlays/dev/plantsbywebsphereee6-configmap.yaml` file
+     -  Add the database host imformation to access the dev database
+
   -  Update the `base/application-cr.yaml` file
      - Add the referece to the container image
      - Disable TLS, as we do not have this configured in our environment
      - Accept the Liberty license
-     
-     
-  - Update the `base/plantsbywebsphereee6-configmap.yaml` file
-     -  Add the database host imformation to access the dev database
-
+  
 ___
 
 **TIP:** To perform the updates, you will copy updated versions of the yaml files from the lab artifacts that we provide for the lab. This way you can focus on the outcomes, rather that the tedious task of editing text files.    
@@ -774,7 +798,7 @@ ___
 
         cd /home/techzone/Student/labs/appmod/migration-bundle/deploy/kustomize/overlays/dev/
 
-        cp  /home/techzone/appmod-pot-labfiles/labs/RuntimeModernization/deploy-config-updates/apps-pbw/plantsbywebsphereee6-secret.yaml  /home/techzone/Student/labs/appmod/migration-bundle/deploy/kustomize/overlays/dev 
+        cp  /home/techzone/appmod-pot-labfiles/labs/RuntimeModernization/lab_2161-1/deploy-config-updates/apps-pbw/plantsbywebsphereee6-secret.yaml  /home/techzone/Student/labs/appmod/migration-bundle/deploy/kustomize/overlays/dev 
 
     The update to the `plantsbywebsphereee6-secret.yaml` in the **overlays/dev** directory is now complete. The sensitive data is encoded and added to the yaml file. 
 
@@ -805,13 +829,26 @@ ___
 
       ___ 
 
-2.  Update the `application-cr.yaml` file
+
+
+2.	Update the **plantsbywebsphereee6-configmap.yaml** file, which contains the database name and host for the dev database
+
+        cd /home/techzone/Student/labs/appmod/migration-bundle/deploy/kustomize/overlays/dev
+
+        cp  /home/techzone/appmod-pot-labfiles/labs/RuntimeModernization/lab_2161-1/deploy-config-updates/apps-pbw/plantsbywebsphereee6-configmap.yaml  /home/techzone/Student/labs/appmod/migration-bundle/deploy/kustomize/overlays/dev
+
+    The update to the `plantsbywebsphereee6-configmap.yaml` in the **base** directory is now complete. The database host for the dev database has been added to the yaml file. 
+
+    ![](./images/media/pbw-configmap-yaml-update.png)
+
+
+3.  Update the `application-cr.yaml` file
     
     The `application-cr.yaml` is the WebSphere Liberty custom resource used to deploy the PlantsByWebSphere application.
   
         cd /home/techzone/Student/labs/appmod/migration-bundle/deploy/kustomize/base/
 
-        cp  /home/techzone/appmod-pot-labfiles/labs/RuntimeModernization/deploy-config-updates/apps-pbw/application-cr.yaml  /home/techzone/Student/labs/appmod/migration-bundle/deploy/kustomize/base 
+        cp  /home/techzone/appmod-pot-labfiles/labs/RuntimeModernization/lab_2161-1/deploy-config-updates/apps-pbw/application-cr.yaml  /home/techzone/Student/labs/appmod/migration-bundle/deploy/kustomize/base 
 
     The updated `application-cr.yaml` in the **base** directory is now complete. The PlantsByWebSphere application configuration is finalized.  
 
@@ -819,17 +856,7 @@ ___
 
 
 
-3.	Update the **plantsbywebsphereee6-configmap.yaml** file, which contains the database name and host for the dev database
-
-        cd /home/techzone/Student/labs/appmod/migration-bundle/deploy/kustomize/base/
-
-        cp  /home/techzone/appmod-pot-labfiles/labs/RuntimeModernization/deploy-config-updates/apps-pbw/plantsbywebsphereee6-configmap.yaml  /home/techzone/Student/labs/appmod/migration-bundle/deploy/kustomize/base 
-
-    The update to the `plantsbywebsphereee6-configmap.yaml` in the **base** directory is now complete. The database host for the dev database has been added to the yaml file. 
-
-    ![](./images/media/pbw-configmap-yaml-update.png)
-
- ### 4.2 Deploy the application and its configuration to OpenShift
+ ### 4.3 Deploy the application and its configuration to OpenShift
 
 To deploy the PlantsByWebSphere application to OpenShift, you must perform the following basic steps.
 
@@ -908,11 +935,11 @@ You must specify which overlay will provide the configuration (dev in this case)
 
 10. From the browser, navigate to the PlantsByWebSphere route for the `dev` deployment:
 
-        http://plantsbywebsphereee6-dev.apps.ocp.ibm.edu/PlantsByWebSphere
+        http://plantsbywebsphereee6-apps-pbw.apps.ocp.ibm.edu/PlantsByWebSphere
  
     The PlantsByWebSphere main page is displayed.
 
-    ![A website page of a garden Description automatically generated](./images/media/image78.png)
+    ![A website page of a garden Description automatically generated](./images/media/image78a.png)
 
 11. Click on the **`Trees`** category and view the trees that are loaded in the ‘dev’ environment database.
 
@@ -922,7 +949,7 @@ You must specify which overlay will provide the configuration (dev in this case)
 
 
 
-##  4.3 Explore the WebSphere Liberty Operator in OpenShift
+##  4.4 Explore the WebSphere Liberty Operator in OpenShift
 
 In this section, you will take a look at the **WebSphere Liberty Operator** in the OpenShift console to see what has been deployed.
 
@@ -1003,11 +1030,11 @@ In this section, you will take a look at the **WebSphere Liberty Operator** in t
         http://plantsbywebsphereee6-apps-pbw.apps.ocp.ibm.edu/PlantsByWebSphere
 
 
-## 4.4 Re-deploy app with different configuration to OpenShift
+## 4.5 Re-deploy app with different configuration to OpenShift
 
-We have deployed the PlantsByWebSphere application with its configuration to the `dev` environemnt, using a single kustomize command. 
+We have deployed the PlantsByWebSphere application with its configuration to `dev`, using a single kustomize command. 
 
-In this section, we will deploy the same application again with a new configuration for the `staging` environment, again using a single kustomize command.
+In this section, we will deploy the same application again with a new configuration for `staging`, again using a single kustomize command.
 
 
 1.	Create a new `overlay` directory called **staging** that will store the new staging configuration, coping the existing dev directory.
@@ -1016,39 +1043,46 @@ In this section, we will deploy the same application again with a new configurat
 
         cp -r dev staging
 
-2.	Update the **plantsbywebsphereee6-configmap.yaml** file, which contains the database name and host for the **staging** environment
+2.	Update the **plantsbywebsphereee6-configmap.yaml** file, which contains the database name and host for the **staging** configuration
 
-    To update, use the command below to copy a completed version of the config map yaml file to the new configuration for the **staging** environment.  
+    To update, use the command below to copy a completed version of the config map yaml file to the new configuration for the **staging** configuration.  
 
-        cp  /home/techzone/appmod-pot-labfiles/labs/RuntimeModernization/deploy-config-updates/apps-pbw/plantsbywebsphereee6-configmap-staging.yaml  /home/techzone/Student/labs/appmod/migration-bundle/deploy/kustomize/base/plantsbywebsphereee6-configmap.yaml
+        cp  /home/techzone/appmod-pot-labfiles/labs/RuntimeModernization/lab_2161-1/deploy-config-updates/apps-pbw/plantsbywebsphereee6-configmap-staging.yaml  /home/techzone/Student/labs/appmod/migration-bundle/deploy/kustomize/overlays/staging/plantsbywebsphereee6-configmap.yaml
 
 
-    The update to the `plantsbywebsphereee6-configmap.yaml` in the **base** directory is now complete. The database **serverName** for the **staging** environment has been added to the configmap yaml file, as illustrated below. 
+    The update to the `plantsbywebsphereee6-configmap.yaml` in the **base** directory is now complete. The database **serverName** for the **staging** configuration has been added to the configmap yaml file, as illustrated below. 
 
     ![](./images/media/staging-db-servername.png)
 
-
-3.	Move back to the `kustomize` directory and delete the `dev` deployment
+ 
+4. From the `kustomize` directory. apply the new `staging` overlay
 
         cd /home/techzone/Student/labs/appmod/migration-bundle/deploy/kustomize
 
-        oc delete -n apps-pbw -k overlays/dev
-
-    ___
-    **Note:** Typically, you would not have to delete the deployment. However, in the sample application, configuration data is cached within the app, and it is not designed to look for stale cached content. 
-    ___
-
-4. From the `kustomize` directory. apply the new `staging` overlay
-
         oc apply -n apps-pbw -k overlays/staging        
 
-5. From the browser, navigate to the PlantsByWebSphere route for the application:
+5. Restart the PlantsByWebSphere application, to work around a bug in the PlantsByWebSphere app.
 
-        http://plantsbywebsphereee6-dev.apps.ocp.ibm.edu/PlantsByWebSphere
+        oc delete -n apps-pbw pod $(oc get pod -o template --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}')
+
+6. Ensure the pod has restarted
+
+        oc get pods -n apps-pbw
+
+    The **STATUS** State should be `Running`
+
+
+        NAME                                    READY   STATUS    
+        plantsbywebsphereee6-6d8979cc99-hj4fg   1/1     Running   
+
+
+7. From the browser, navigate to the PlantsByWebSphere route for the application:
+
+        http://plantsbywebsphereee6-apps-pbw.apps.ocp.ibm.edu/PlantsByWebSphere
  
     The PlantsByWebSphere main page is displayed.
 
-    ![A website page of a garden Description automatically generated](./images/media/image78.png)
+    ![A website page of a garden Description automatically generated](./images/media/image78a.png)
 
 
     a. Click on the `Home` link on the application main page
