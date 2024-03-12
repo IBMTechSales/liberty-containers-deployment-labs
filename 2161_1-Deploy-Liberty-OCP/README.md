@@ -169,25 +169,14 @@ To simplify the lab and to allow you to focus on the migration bundle, certain s
 
     c.  **Add “execute” permissions to the shell scripts**
 
-        find ./appmod-pot-labfiles -name "\*.sh" -exec chmod +x {} \\;
+        find ./appmod-pot-labfiles -name "*.sh" -exec chmod +x {} \; 
 
-2.  Run the provided shell script to setup the lab environment.
+2. Start the PlantsByWebSphere application database
 
-    The lab-setup.sh script moves files from the cloned git repo to a **student** directory used in the lab.
- 
-        cd /home/techzone/appmod-pot-labfiles/labs/RuntimeModernization/scripts
- 
-        ./lab-setup.sh
- 
-    When complete, you will see the following output
- 
-     
-    ==========================
- 
-     lab-setup script completed
- 
-    ==========================
-    
+    The PlantsByWebShere application database runs in a local docker container. Usethe command below to start the database. 
+
+        docker start db2_demo_data
+
 
 ## 1.2 Launch Transformation Advisor (local)
 
@@ -401,7 +390,9 @@ In this section, you will review the migration bundle to see what files need to 
 
 ### 2.1.4   Configure the Liberty server for PlantsByWebSphere
 
-In this section, extract the migration bundle that you downloaded. Them. copy the required dependency files and server configuration to the Liberty server.
+In this section, extract the migration bundle that you downloaded. Then, copy the required dependency files and server configuration to the Liberty server.
+
+  - Extract the **migration bundle** to a new directory
 
   - Copy the **DB2 libraries** to the directory defined in the "DB2 driver configuration" in the server.xml file.
 
@@ -420,28 +411,42 @@ In this section, extract the migration bundle that you downloaded. Them. copy th
 
         unzip plantsbywebsphereee6.ear_migrationBundle.zip
 
-2.	Copy the PlantsByWebSPhere application binary file into the `apps` location in Liberty
+2. List the directory of the extracted migration bundle
+
+        ls -l        
+
+    The migration bundle contains the files to build and deploy the PlantsByWebSphere application to Liberty, in containers, and on OpenShift.     
+
+    ![](./images/media/migbundle-dirs.png)
+ 
+
+3.	Copy the PlantsByWebSPhere application binary file into the `apps` location in Liberty
 
         cp /home/techzone/appmod-pot-labfiles/labs/RuntimeModernization/plantsbywebsphereee6.ear /home/techzone/wlp/usr/servers/pbwserver/apps
 
-3. Create the `global shared` directory in Liberty. 
+4. Create the `global shared` directory in Liberty. 
 
     This is where you will copy the DB2 libraries for Liberty
 
         mkdir /home/techzone/wlp/usr/shared/config/lib/global
  
-4.	Copy the DB2 driver files into the `global shared` location in Liberty.
+5.	Copy the DB2 driver files into the `global shared` location in Liberty.
 
     This will make it available to any application running in Liberty.
 
         cp /home/techzone/Student/LabFiles/db2_drivers/* /home/techzone/wlp/usr/shared/config/lib/global
 
 
-5.	Copy the `server.xml` file from the migration bundle into the Liberty server to replace its existing configuration. Choose to overwrite the existing file if prompted.
+6.	Copy the `server.xml` file from the migration bundle into the Liberty server to replace its existing configuration. Choose to overwrite the existing file if prompted.
 
         cp /home/techzone/Student/labs/appmod/migration-bundle/src/main/liberty/config/server.xml /home/techzone/wlp/usr/servers/pbwserver 
 
-6.  Run the PlantsByWebSphere application from the browser.
+    ___
+
+    Now that the PlantsByWebSphere binary and its configuration are added to the Liberty server, the application is ready to be run form the web browser.     
+    ___
+
+7.  Run the PlantsByWebSphere application from the browser.
 
         http://localhost:9080/PlantsByWebSphere
  
@@ -449,7 +454,7 @@ In this section, extract the migration bundle that you downloaded. Them. copy th
  
     ![A website page of a garden Description automatically generated](./images/media/image36.png)
 
-7.  Attempt to click on any of the tabs: “**Flowers**”, **Fruits & Vegetables**”, or “**Trees**”.
+8.  Attempt to click on any of the tabs: “**Flowers**”, **Fruits & Vegetables**”, or “**Trees**”.
 
     ___
 
@@ -525,7 +530,7 @@ The **server.xml** file defines a set of **`features`** that the application req
 
 2. From the `gedit` editor that you have open, update the values in the **server.xml** file for the sensitive data as illustrtated below:
 
-   a. Scroll to the bottom of the server.xml file to view the sensitive-data variables. 
+   a. Scroll to the bottom of the `server.xml` file to view the sensitive-data variables. 
 
    b.  Set the default value for **rhel9_baseNode01_pbwuser_password** to: **`db2inst1-pwd`**
     
@@ -567,11 +572,11 @@ In the next sections, you will deploy the PlantsByWebSphere application to conta
 
 ## 3.1  Explore the Containerfile used to build PlantsByWebSphere as a container image
 
-In the previous section, you used the **server.xml** to get the  application running on a local Liberty instance. This was to show you how the Transformation Advisor **server.xml** file is used. If you are moving to Liberty in VMs as your new runtime, then you are done! 
+In the previous section, you used the **server.xml** to get the  application running on a `local Liberty instance`. This was to show you how the Transformation Advisor **server.xml** file is used. If you are moving to Liberty in VMs as your new runtime, then you are done! 
 
 However. if containers are to be your final destination, this section explores the Transformation Advisor migration bundle artifacts that accelerate application deployment to Lberty in containers. 
 
-In the case of **`Simple`** applications, it is not necessary to carry out a separate step of deploying to a local Liberty instance at all. Instead, by using the Transformation Advisor migration bundle, you can deploy your application to Liberty running in a container all in one go. 
+In the case of **`Simple`** applications, it is not necessary to carry out a separate step of deploying to a local Liberty instance at all. Instead, by using the Transformation Advisor migration bundle, you can deploy your application to **Liberty running in a container** all in one go. 
 
 This is what we will do now.
 
@@ -591,7 +596,7 @@ This is what we will do now.
 
 3.	Update the server.xml file to remove the TLS configuration which is not used. 
 
-        cp /home/techzone/appmod-pot-labfiles/labs/RuntimeModernization/deploy-config-updates/apps-pbw/server.xml /home/techzone/Student/labs/appmod/migration-bundle/src/main/liberty/config 
+        cp /home/techzone/appmod-pot-labfiles/labs/RuntimeModernization/lab_2161-1/deploy-config-updates/apps-pbw/server.xml /home/techzone/Student/labs/appmod/migration-bundle/src/main/liberty/config 
 
 
 4.  The `migration bundle` is ready to be used to generate an image of your application running on WebSphere Liberty. To do this, we will use the **`Containerfile`** that comes with the migration bundle.
@@ -831,13 +836,13 @@ ___
 
 
 
-2.	Update the **plantsbywebsphereee6-configmap.yaml** file, which contains the database name and host for the dev database
+2.	Update the **plantsbywebsphereee6-configmap.yaml** file, which contains the database name and host for the `dev` database
 
         cd /home/techzone/Student/labs/appmod/migration-bundle/deploy/kustomize/overlays/dev
 
         cp  /home/techzone/appmod-pot-labfiles/labs/RuntimeModernization/lab_2161-1/deploy-config-updates/apps-pbw/plantsbywebsphereee6-configmap.yaml  /home/techzone/Student/labs/appmod/migration-bundle/deploy/kustomize/overlays/dev
 
-    The update to the `plantsbywebsphereee6-configmap.yaml` in the **base** directory is now complete. The database host for the dev database has been added to the yaml file. 
+    The update to the `plantsbywebsphereee6-configmap.yaml` in the **overlays/dev** directory is now complete. The database host for the dev database has been added to the yaml file. 
 
     ![](./images/media/pbw-configmap-yaml-update.png)
 
@@ -941,9 +946,9 @@ You must specify which overlay will provide the configuration (dev in this case)
 
     ![A website page of a garden Description automatically generated](./images/media/image78a.png)
 
-11. Click on the **`Trees`** category and view the trees that are loaded in the ‘dev’ environment database.
+11. Click on the **`Trees`** category and view the trees that are loaded in the ‘dev’ database.
 
-    This catalog of trees was retrieved from the DB2 database in the `dev` environment.
+    This catalog of trees was retrieved from the DB2 database in the `dev` configuration.
  
     ![A screenshot of a computer Description automatically generated](./images/media/image79.png)
 
@@ -971,7 +976,7 @@ In this section, you will take a look at the **WebSphere Liberty Operator** in t
 
     b. Select `apps-pbw` in the **Project** filter
 
-    c. Type **`Liberty`** in the **NAme** filter
+    c. Type **`Liberty`** in the **Name** filter
 
     d.  Click on **`IBM WebSphere Liberty`**
 
@@ -1019,6 +1024,8 @@ In this section, you will take a look at the **WebSphere Liberty Operator** in t
 
     d.  Click on the **`Location`** link for the route
 
+         http://plantsbywebsphereee6-apps-pbw.apps.ocp.ibm.edu
+
     ![A screenshot of a computer Description automatically generated](./images/media/image94a.png)
 
     e.  The **Welcome to Liberty** page is displayed in a new Browser tab. 
@@ -1043,23 +1050,29 @@ In this section, we will deploy the same application again with a new configurat
 
         cp -r dev staging
 
-2.	Update the **plantsbywebsphereee6-configmap.yaml** file, which contains the database name and host for the **staging** configuration
+2.	Update the **plantsbywebsphereee6-configmap.yaml** file, which contains the database name and host for the **staging** configuration.
 
     To update, use the command below to copy a completed version of the config map yaml file to the new configuration for the **staging** configuration.  
 
         cp  /home/techzone/appmod-pot-labfiles/labs/RuntimeModernization/lab_2161-1/deploy-config-updates/apps-pbw/plantsbywebsphereee6-configmap-staging.yaml  /home/techzone/Student/labs/appmod/migration-bundle/deploy/kustomize/overlays/staging/plantsbywebsphereee6-configmap.yaml
 
 
-    The update to the `plantsbywebsphereee6-configmap.yaml` in the **base** directory is now complete. The database **serverName** for the **staging** configuration has been added to the configmap yaml file, as illustrated below. 
+    The update to the `plantsbywebsphereee6-configmap.yaml` in the **overays/staging** directory is now complete. The database **serverName** for the **staging** configuration has been added to the configmap yaml file, as illustrated below. 
 
     ![](./images/media/staging-db-servername.png)
 
  
-4. From the `kustomize` directory. apply the new `staging` overlay
+4. From the `kustomize` directory, apply the new `staging` overlay
 
         cd /home/techzone/Student/labs/appmod/migration-bundle/deploy/kustomize
 
         oc apply -n apps-pbw -k overlays/staging        
+
+    **Note:** that the configmap and secret were `configured`,  but the application is `unchanged`, as illustrated below.  
+
+        configmap/plantsbywebsphereee6-config configured
+        secret/plantsbywebsphereee6-secret configured
+        webspherelibertyapplication.liberty.websphere.ibm.com/plantsbywebsphereee6 unchanged
 
 5. Restart the PlantsByWebSphere application, to work around a bug in the PlantsByWebSphere app.
 

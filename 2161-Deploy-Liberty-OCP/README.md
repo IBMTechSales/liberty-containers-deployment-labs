@@ -175,7 +175,7 @@ To simplify the lab and to allow you to focus on the migration bundle, certain s
 
     c.  **Add “execute” permissions to the shell scripts**
 
-        find ./appmod-pot-labfiles -name "\*.sh" -exec chmod +x {} \\;
+        find ./appmod-pot-labfiles -name "*.sh" -exec chmod +x {} \;
 
 2.  Run the provided shell script to setup the lab environment.
 
