@@ -656,7 +656,7 @@ The WebSphere Application Server environment configuration is also available on 
 
 <br/>
 
-1.  Run the binary scanner to collect the data for the **PlantsByWebSphere** application in the WebSphere profile named “**profile1**”, using the **“--ta**” option.
+1.  Run the binary scanner to collect the data for the **PlantsByWebSphere** application in the WebSphere profile named “**AppSrv01**”, using the **“--ta**” option.
 
 
         cd /home/techzone/binary-scanner/wamt
@@ -679,7 +679,7 @@ The WebSphere Application Server environment configuration is also available on 
     All 15 applications should again be displayed and listed in the workspace.
  
 
-3. Upload the “**profile1.zip**” file to TA.
+3. Upload the “**AppSrv01.zip**” file to TA.
     
     a.  From the TA UI, click **`Options > Upload data`** from the **`options`** menu, to start uploading the new **`AppSrv01.zip`** archive collected from the binary scanner.
 
