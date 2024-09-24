@@ -2,7 +2,7 @@
 
 ![banner](./images/media/image1.jpeg) 
 
-**Last updated:** September 2024
+**Last updated:** March 2024
 
 **Duration:** 60 minutes
 
@@ -173,7 +173,7 @@ To simplify the lab and to allow you to focus on the migration bundle, certain s
 
 2. Start the PlantsByWebSphere application database
 
-    The PlantsByWebShere application database runs in a local docker container. Use the command below to start the database. 
+    The PlantsByWebShere application database runs in a local docker container. Usethe command below to start the database. 
 
         docker start db2_demo_data
 
@@ -223,7 +223,7 @@ In this section, create a new workspace named **'proof_of_concept'**.
 
 A `workspace` is a designated area that will house the migration recommendations provided by Transformation Advisor based on the Data Collector scan results of your application server environment.
 
-1. Create a new workspace named **proof_of_concept**
+1. Create a new workspace named **proof-of-concept**
 
     a.  From the Transformation Advisor Home page, click the **`Create New`** button
 
@@ -464,7 +464,7 @@ In this section, extract the migration bundle that you downloaded. Then, copy th
  
     ___
 
-    These pages should display a catalog of items in their respective category, which are retrieved from the application database. 
+    These pages should display a catalog of items in their respective category, which are rereived from the application database. 
 
     **So what happened?** 
     
@@ -486,7 +486,7 @@ The **server.xml** file defines a set of **`features`** that the application req
 
         gedit /home/techzone/wlp/usr/servers/pbwserver/server.xml
 
-    - **Section 1** contains the `features` that the application requires, and these are discovered automatically during analysis performed by the Transformation Advisor **Data Collector**.
+    - **Section 1** contains the `features` that the application requires, and these are discovered automatically during analysis performed the Transformation Advisor **Data Collector**.
 
       ![A screenshot of a computer Description automatically generated](./images/media/image38.png)
 
@@ -563,7 +563,7 @@ The **server.xml** file defines a set of **`features`** that the application req
 
 ### Checkpoint
 
-At this point in the lab, you have successfully demonstrated the PlantsByWebSphere application runs successfully in WebSPhere Liberty on a local VM. 
+At this point in the lab, you have successfully demonstrated the PlantsByWebSphere application runs successfully in WebSPhere Lberty on a local VM. 
 
 In the next sections, you will deploy the PlantsByWebSphere application to containers and Red Hat OpenShift. 
 
@@ -574,7 +574,7 @@ In the next sections, you will deploy the PlantsByWebSphere application to conta
 
 In the previous section, you used the **server.xml** to get the  application running on a `local Liberty instance`. This was to show you how the Transformation Advisor **server.xml** file is used. If you are moving to Liberty in VMs as your new runtime, then you are done! 
 
-However. if containers are to be your final destination, this section explores the Transformation Advisor migration bundle artifacts that accelerate application deployment to Liberty in containers. 
+However. if containers are to be your final destination, this section explores the Transformation Advisor migration bundle artifacts that accelerate application deployment to Lberty in containers. 
 
 In the case of **`Simple`** applications, it is not necessary to carry out a separate step of deploying to a local Liberty instance at all. Instead, by using the Transformation Advisor migration bundle, you can deploy your application to **Liberty running in a container** all in one go. 
 
@@ -645,7 +645,7 @@ In this section, you will build and run the PlantsByWebSphere application in a l
 
     - `-f` is the path to the `Containerfile` used to build the image
     - `--tag` allows you to define the name and version of the image to build
-    - `.` is the "current directory" of the migration bundle that includes the artifacts for building the container image. 
+    - `.` is the "current directory" of the migration bunlde that includes the artifacts for building the container image. 
 
     **Note:** Ignore the following warning message. This will be fixed in the next release of Transfromation Advisor 
 
@@ -929,7 +929,7 @@ You must specify which overlay will provide the configuration (dev in this case)
 
 9. Verify the appliation `pod` is ready.
 
-    This may take a few moments. Just keep checking with command below
+    This may take a few moments. Just keep checkig with command below
 
         oc get pods -n apps-pbw
 
@@ -1160,18 +1160,19 @@ You can further distribute the configuration into different repositories for eac
 
 ![A black background with white arrows and dots Description automatically generated](./images/media/image105.png)
 
+This illustration above comes from an excellent article on real world GitOps: <https://developer.ibm.com/blogs/gitops-best-practices-for-the-real-world/>
+
 We will not cover all of GitOps it in detail in this lab - however, there are two relevant areas that are worth mentioning briefly.
 
 **Configuration Drift**
 
 With the GitOps approach, there is the risk that the deployed configuration for the OpenShift cluster does not match what is in the Git repository. Someone could have updated the OpenShift cluster directly, for example. There are a number of tools to manage this configuration drift, with ArgoCD being a common tool to address this issue. It can be configured to sync manually or automatically, so that any changes made directly on the cluster are reverted to what is in the Git repository. 
 
-The OpenShift GitOps Operator can be used to install ArgoCD into your OpenShift cluster. 
+The OpenShift GitOps Operator can be used to install ArgoCD into your OpenShift cluster. Further details on how to this can be found here: <https://developer.ibm.com/tutorials/deploy-open-liberty-applications-with-gitops/>
 
 **Securing Secrets**
 
-Even with controls and restricted access to Git repositories, it is not considered good practice to store the sensitive data in plain text (aka the values entered into the secrets files). 
-There are generally two approaches you can take to tackle this, encrypt the values or use a reference:
+Even with controls and restricted access to Git repositories, it is not considered good practice to store the sensitive data in plain text (aka the values entered into the secrets files). There are generally two approaches you can take to tackle this: encrypt the values or use a reference:
 
   - **Encrypt the values**: In this approach, the value in the secret file is encrypted when it is committed to the Git repo. During deployment to OpenShift there is an extra step where the secret values are decrypted. `SealedSecrets` is one implementation of such an approach.
 
@@ -1200,7 +1201,7 @@ TA provides recommendations for modernization which includes and considers appli
 
         http://localhost:3000
 
-2. Open the `proof_of_concept` workspace, if it is not already open
+2. Open the `proof-of-concept` workspace, if it is not already open
 
     ![](./images/media/ta-proof-of-concept.png)
 
@@ -1306,7 +1307,7 @@ This workspace has only a single application name `plantsbywebsphereee6.ear`. It
  
     ![](./images/media/image115.png)
 
-    b.  Scroll down to the bottom of the **Inventory report** and locate the **`Contained Archives`** section.
+    b.  Scroll down to the bottom of the **Inventory report** and locate **`the Contained Archives`** section.
 
     The inventory report provides valuable insights into utility jars that are contained in the application. It also provides the ‘package’ name of the utility jar. This is extremely valuable to help determine what 3<sup>rd</sup> party utilities are used by the application.
 
@@ -1320,7 +1321,7 @@ This workspace has only a single application name `plantsbywebsphereee6.ear`. It
  
     ![A screenshot of a computer Description automatically generated](./images/media/image117.png)
 
-    a.  Scroll down the Technology Report, which can quickly help assess which Java EE API technologies that the PlantsByWebSphere application uses, and which editions of Liberty the APIs are available.
+    a.  Scroll down Technology Report, which can quickly help assess which Java EE API technologies that the PlantsByWebSphere application uses, and which editions of Liberty the APIS are available.
 
     ![A screenshot of a computer Description automatically generated](./images/media/image118.png)
 
