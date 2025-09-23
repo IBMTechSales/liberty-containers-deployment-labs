@@ -601,7 +601,7 @@ This is what we will do now.
 
 4.  Modify the "**Containerfile**" to specify a specific version of Liberty to deploy: in this case, **icr.io/appcafe/websphere-liberty:24.0.0.8-kernel-java8-openj9-ubi**
 
-        sed -i 's/websphere-liberty:kernel-java8-openj9-ubi/websphere-liberty:24.0.0.0-kernel-java8-openj9-ubi/g' /home/techzone/Student/labs/appmod/migration-bundle/Containerfile
+        sed -i 's/websphere-liberty:kernel-java8-openj9-ubi/websphere-liberty:24.0.0.8-kernel-java8-openj9-ubi/g' /home/techzone/Student/labs/appmod/migration-bundle/Containerfile
 
 
 5. The `migration bundle` is ready to be used to generate an image of your application running on WebSphere Liberty. To do this, we will use the **`Containerfile`** that comes with the migration bundle.
