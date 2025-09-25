@@ -4,7 +4,7 @@
 
 ![banner](./images/media/banner1.jpeg) 
 
-**Last updated:** March 2024
+**Last updated:** September 2025
 
 **Duration:** 45 minutes
 
@@ -1287,8 +1287,13 @@ The `Containerfile` is a two-stage Containerfile:
     in the server.xml file
       - **RUN configure.sh** installs the Open Liberty features into the Docker image.
 
+1.  Modify the "**Containerfile**" to specify a specific version of Liberty to deploy: in this case, **icr.io/appcafe/websphere-liberty:24.0.0.8-kernel-java8-openj9-ubi**
 
-1.  Build the Docker image that includes the modresorts application on
+        sed -i 's/open-liberty:kernel-slim-java8-openj9-ubi/open-liberty:24.0.0.8-kernel-slim-java8-openj9-ubi/g' /home/techzone/modresorts-bundle/Containerfile
+
+
+        
+2.  Build the Docker image that includes the modresorts application on
     Open Liberty
 
     a.  From a Terminal window, change to the directory where the Transformation Advisor migration bundle is located. 
@@ -1319,7 +1324,7 @@ The `Containerfile` is a two-stage Containerfile:
 
     ![](./images/media/image78.png)
 
-2.  Run the Modresorts app in the container
+3.  Run the Modresorts app in the container
 
         docker run -d -p 9081:9080 --name modresorts modresorts:1.0
 
@@ -1334,7 +1339,7 @@ The `Containerfile` is a two-stage Containerfile:
     spin up the new container
 
            
-3.  Verify the docker container is running
+4.  Verify the docker container is running
 
         docker ps | grep modresorts
 
@@ -1345,14 +1350,14 @@ The `Containerfile` is a two-stage Containerfile:
     ![](./images/media/image79.png)
 
 
-4.  View the Open Liberty log in the “**modresorts**” container to
+5.  View the Open Liberty log in the “**modresorts**” container to
     verify the modresorts application was installed and is running
 
         docker logs modresorts
 
     ![](./images/media/image80.png)
 
-5.  Run the modresorts application from the Web Browser.
+6.  Run the modresorts application from the Web Browser.
 
     - The application is exposed on port: **9081**
 
@@ -1377,7 +1382,7 @@ The `Containerfile` is a two-stage Containerfile:
 
     ![](./images/media/image75.png)
 
-6.  **`Stop`** and **`remove`** the container. Then check that the
+7.  **`Stop`** and **`remove`** the container. Then check that the
     container has been removed, by using the “**docker ps -a”** command
 
         docker stop modresorts
@@ -1386,7 +1391,7 @@ The `Containerfile` is a two-stage Containerfile:
         
         docker ps -a | grep modresorts
 
-7.  **`Remove`** the modresorts container image. Then use the “**docker
+8.  **`Remove`** the modresorts container image. Then use the “**docker
     images**” command to verify the image has been removed
 
         docker rmi modresorts:1.0
